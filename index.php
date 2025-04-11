@@ -101,8 +101,20 @@ if(isset($_REQUEST['id']) && isset($_REQUEST['op'])){
 }
 
 //Consulta a la Base de datos
-$stm = $conexion->prepare("select * from gastos");
-$stm->execute([]);
+// $stm = $conexion->prepare("select * from gastos");
+// $stm->execute([]);
+// $resultados = $stm->fetchAll();
+
+if (isset($_REQUEST['buscar']) && !empty(trim($_REQUEST['buscar']))) {
+    $buscar = '%' . trim($_REQUEST['buscar']) . '%';
+    $stm = $conexion->prepare("select * from gastos 
+        where nombre like :busqueda 
+        or tipoGasto like :busqueda");
+    $stm->execute([':busqueda' => $buscar]);
+} else {
+    $stm = $conexion->prepare("select * from gastos");
+    $stm->execute();
+}
 $resultados = $stm->fetchAll();
 ?>
 
@@ -121,7 +133,8 @@ $resultados = $stm->fetchAll();
 </h1>
 
     <div class="container">
-        <form action="">
+        <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post">
+            <input type="hidden" name="id" value="<?php echo isset($codigoGasto)? $codigoGasto : "" ?>">
 
             <label class="form-label" for="nombre">Nombre de la Persona:</label>
             <input class="form-control" type="text" name="txtNombre" id="nombre" placeholder="Ingrese el Nombre de la Persona" value="<?php echo htmlspecialchars($nombre) ?>"><br>
@@ -166,7 +179,7 @@ $resultados = $stm->fetchAll();
             <div class="alert alert-primary alert-dismissible fade show" role="alert" >
                 <?php
                     switch ($_REQUEST['mensaje']) {
-                        case 'registroGuardado':
+                        case 'registroGastoFamiliarGuardado':
                             echo "<p>Registro Guardado.</p>";
                             break;
                         case 'registroModificado':
@@ -180,6 +193,13 @@ $resultados = $stm->fetchAll();
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
+
+        <form method="post" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="buscar" class="form-control" placeholder="Buscar Datos de la tabla" value="<?php echo isset($_REQUEST['buscar']) ? htmlspecialchars($_REQUEST['buscar']) : ''; ?>">
+                <button type="submit" class="btn btn-info">BUSCAR</button>
+            </div>
+        </form>
 
         <!-- Creacion de la Tabla para visualizar los datos insertados -->
         <table class="table table-bordered table-hover">
