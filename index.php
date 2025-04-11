@@ -50,7 +50,21 @@ $codigoGasto = null;
 
             <label class="form-label" for="valorGasto">Valor del Gasto</label>
             <input class="form-control" type="number" name="valorGasto" id="ValorGasto" value="<?php echo "$ " . $valorGasto ?>"><br>
+
+            <?php
+                if($codigoGasto){
+                    echo '<input class="btn btn-dark" type="submit" value="Modificar" name="submit2">';
+                } 
+                else {
+                    echo '<input class="btn btn-primary" type="submit" value="Enviar" name="submit1">';
+                }
+            ?>
+            <a class="btn btn-secondary" href="index.php">Cancelar</a>
         </form>
+        <br>
+
     </div>
+
+    
 </body>
 </html>
