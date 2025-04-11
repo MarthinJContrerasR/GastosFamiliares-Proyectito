@@ -122,7 +122,7 @@ $resultados = $stm->fetchAll();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
-<body>
+<body style="background-color:rgb(199, 206, 199)">
     
 <h1 class="text-center" style="font-family: 'Arial', sans-serif; font-size: 50px; font-weight: bold; color: #2C3E50; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); letter-spacing: 1px; margin-top: 20px;">
   GASTOS FAMILIARES
@@ -132,10 +132,10 @@ $resultados = $stm->fetchAll();
         <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post">
             <input type="hidden" name="id" value="<?php echo isset($codigoGasto)? $codigoGasto : "" ?>">
 
-            <label class="form-label" for="nombre">Nombre de la Persona:</label>
+            <label class="form-label" for="nombre" style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 30px">Nombre de la Persona</label>
             <input class="form-control" type="text" name="txtNombre" id="nombre" placeholder="Ingrese el Nombre de la Persona" value="<?php echo htmlspecialchars($nombre) ?>"><br>
 
-            <label class="form-label" for="tipoGasto">Tipo de Gasto</label>
+            <label class="form-label" for="tipoGasto" style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 30px">Tipo de Gasto</label>
             <select class="form-select" name="tipoGasto" id="tipoGasto">
                 <option value="">Seleccione un Gasto</option>
                 <option value="Alimentacion" <?php echo ($tipoGasto=='Alimentacion')? 'selected' : '' ?>>Alimentacion</option>
@@ -147,8 +147,8 @@ $resultados = $stm->fetchAll();
                 <option value="Entretenimiento" <?php echo  ($tipoGasto=='Entretenimiento')? 'selected' : '' ?>>Entretenimiento</option>
             </select><br>
 
-            <label class="form-label" for="valorGasto">Valor del Gasto</label>
-            <input class="form-control" type="number" name="valorGasto" id="valorGasto" step="0.01" min="0" value="<?php echo $valorGasto ?>"><br>
+            <label class="form-label" for="valorGasto" style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 30px">Valor del Gasto</label>
+            <input class="form-control" type="number" name="valorGasto" id="valorGasto" step="0.01" min="0" placeholder="Ingrese Un Numero Positivo (Entero o Decimal)" value="<?php echo $valorGasto ?>"><br>
 
             <?php
                 if($codigoGasto){
@@ -201,37 +201,39 @@ $resultados = $stm->fetchAll();
         <?php $totalAcumulado = 0; ?>
 
         <!-- Creacion de la Tabla para visualizar los datos insertados -->
-        <table class="table table-bordered table-hover">
-            <thead>
-                <tr class="text-center">
-                    <th>Nombre</th>
-                    <th>Tipo de Gasto</th>
-                    <th>Valor del Gasto</th>
-                    <th colspan="2">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
+        <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    <thead>
+        <tr style="background-color: #3E4C59; color: #ffffff; text-align: center;">
+            <th style="padding: 12px; border: 1px solid #ccc;">Nombre</th>
+            <th style="padding: 12px; border: 1px solid #ccc;">Tipo de Gasto</th>
+            <th style="padding: 12px; border: 1px solid #ccc;">Valor del Gasto</th>
+            <th colspan="2" style="padding: 12px; border: 1px solid #ccc;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($resultados as $registro): ?>
+        <tr style="text-align: center; background-color: #f5f5f5; border-bottom: 1px solid #ddd;">
+            <td style="padding: 10px; border: 1px solid #ddd;"><?php echo $registro['nombre']; ?></td>
+            <td style="padding: 10px; border: 1px solid #ddd;"><?php echo $registro['tipoGasto']; ?></td>
+            <td style="padding: 10px; border: 1px solid #ddd; color: #2A4365;"><?php echo 'L ' . $registro['valorGasto']; ?></td>
+            
+            <td style="padding: 10px; border: 1px solid #ddd;">
+                <a href="index.php?id=<?php echo $registro['codigoGasto'] ?>&op=m" style="background-color: #4A90E2; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px;">Modificar</a>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd;">
+                <a href="index.php?id=<?php echo $registro['codigoGasto'] ?>&op=e" onclick="return confirm('¿Desea eliminar el registro?');" style="background-color: #C0392B; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px;">Eliminar</a>
+            </td>
+        </tr>
+        <?php $totalAcumulado += $registro['valorGasto']; ?>
+        <?php endforeach; ?>
 
-                <?php foreach($resultados as $registro): ?>
-                    <tr class="text-center">
-                        <td><?php echo $registro['nombre']; ?></td>
-                        <td><?php echo $registro['tipoGasto']; ?></td>
-                        <td><?php echo 'L ' . $registro['valorGasto']; ?></td>
-                        
-                        <td><a class="btn btn-primary" href="index.php?id=<?php echo $registro['codigoGasto'] ?>&op=m">Modificar</a></td>
-                        <td><a class="btn btn-danger" href="index.php?id=<?php echo $registro['codigoGasto'] ?>&op=e" onclick="return confirm('¿Desea eliminar el registro?');">Eliminar</a></td>
-                    </tr>
+        <tr style="background-color:rgb(110, 162, 204); text-align: center;">
+            <td colspan="2" style="padding: 12px; border: 1px solid #bbb;"><strong>Total Acumulado</strong></td>
+            <td colspan="3" style="padding: 12px; border: 1px solid #bbb; color:rgb(0, 0, 0);"><strong><?php echo 'L ' . number_format($totalAcumulado, 2); ?></strong></td>
+        </tr>
+    </tbody>
+</table>
 
-                    <?php $totalAcumulado += $registro['valorGasto']; ?>
-
-                <?php endforeach; ?>
-                
-                <tr class="text-center">
-                    <td colspan="2"><strong>Total Acumulado</strong></td>
-                    <td colspan="3"><strong><?php echo 'L ' . number_format($totalAcumulado, 2); ?></strong></td>
-                 </tr>
-            </tbody>
-        </table>
     </div>
 </body>
 </html>
