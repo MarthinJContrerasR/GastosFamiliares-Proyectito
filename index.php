@@ -100,11 +100,6 @@ if(isset($_REQUEST['id']) && isset($_REQUEST['op'])){
     }
 }
 
-//Consulta a la Base de datos
-// $stm = $conexion->prepare("select * from gastos");
-// $stm->execute([]);
-// $resultados = $stm->fetchAll();
-
 if (isset($_REQUEST['buscar']) && !empty(trim($_REQUEST['buscar']))) {
     $buscar = '%' . trim($_REQUEST['buscar']) . '%';
     $stm = $conexion->prepare("select * from gastos 
@@ -128,7 +123,8 @@ $resultados = $stm->fetchAll();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-<h1 class="text-center" style="font-family: 'Arial', sans-serif; font-size: 36px; font-weight: bold; color: #2C3E50; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); letter-spacing: 1px; margin-top: 20px;">
+    
+<h1 class="text-center" style="font-family: 'Arial', sans-serif; font-size: 50px; font-weight: bold; color: #2C3E50; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); letter-spacing: 1px; margin-top: 20px;">
   GASTOS FAMILIARES
 </h1>
 
@@ -193,7 +189,7 @@ $resultados = $stm->fetchAll();
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
-
+        
         <form method="post" class="mb-4">
             <div class="input-group">
                 <input type="text" name="buscar" class="form-control" placeholder="Buscar Datos de la tabla" value="<?php echo isset($_REQUEST['buscar']) ? htmlspecialchars($_REQUEST['buscar']) : ''; ?>">
@@ -201,31 +197,41 @@ $resultados = $stm->fetchAll();
             </div>
         </form>
 
+
+        <?php $totalAcumulado = 0; ?>
+
         <!-- Creacion de la Tabla para visualizar los datos insertados -->
         <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-                <th class="text-center">Nombre</th>
-                <th class="text-center">Tipo de Gasto</th>
-                <th class="text-center">Valor del Gasto</th>
-                <th colspan="2" class="text-center">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
+            <thead>
+                <tr class="text-center">
+                    <th>Nombre</th>
+                    <th>Tipo de Gasto</th>
+                    <th>Valor del Gasto</th>
+                    <th colspan="2">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
 
-            <?php foreach($resultados as $registro): ?>
-            <tr>
-                <td><?php echo $registro['nombre']; ?></td>
-                <td><?php echo $registro['tipoGasto']; ?></td>
-                <td><?php echo $registro['valorGasto']; ?></td>
+                <?php foreach($resultados as $registro): ?>
+                    <tr class="text-center">
+                        <td><?php echo $registro['nombre']; ?></td>
+                        <td><?php echo $registro['tipoGasto']; ?></td>
+                        <td><?php echo 'L ' . $registro['valorGasto']; ?></td>
+                        
+                        <td><a class="btn btn-primary" href="index.php?id=<?php echo $registro['codigoGasto'] ?>&op=m">Modificar</a></td>
+                        <td><a class="btn btn-danger" href="index.php?id=<?php echo $registro['codigoGasto'] ?>&op=e" onclick="return confirm('¿Desea eliminar el registro?');">Eliminar</a></td>
+                    </tr>
+
+                    <?php $totalAcumulado += $registro['valorGasto']; ?>
+
+                <?php endforeach; ?>
                 
-                <td><a class="btn btn-primary" href="index.php?id=<?php echo $registro['codigoGasto'] ?>&op=m">Modificar</a></td>
-                <td><a class="btn btn-danger" href="index.php?id=<?php echo $registro['codigoGasto'] ?>&op=e" onclick="return confirm('¿Desea eliminar el registro?');">Eliminar</a></td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-
+                <tr class="text-center">
+                    <td colspan="2"><strong>Total Acumulado</strong></td>
+                    <td colspan="3"><strong><?php echo 'L ' . number_format($totalAcumulado, 2); ?></strong></td>
+                 </tr>
+            </tbody>
+        </table>
     </div>
 </body>
 </html>

@@ -4,3 +4,4 @@ $conexion = new PDO(
     "root",                          
     ""                        
 );
+?>
