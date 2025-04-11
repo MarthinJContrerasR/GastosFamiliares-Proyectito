@@ -28,9 +28,9 @@ if(isset($_REQUEST['submit1'])){
     }
     
     if($valorGasto==""){
-        if (!is_numeric($valorGasto) || $valorGasto <= 0) {
+        if($valorGasto < 0){
             $error .= "Introduzca un valor numérico positivo de gasto<br>";
-        }        
+        }
     }
 
     if(!$error){
@@ -100,11 +100,10 @@ if(isset($_REQUEST['id']) && isset($_REQUEST['op'])){
     }
 }
 
-//
-
-
-
-
+//Consulta a la Base de datos
+$stm = $conexion->prepare("select * from gastos");
+$stm->execute([]);
+$resultados = $stm->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -140,7 +139,7 @@ if(isset($_REQUEST['id']) && isset($_REQUEST['op'])){
             </select><br>
 
             <label class="form-label" for="valorGasto">Valor del Gasto</label>
-            <input class="form-control" type="number" name="valorGasto" id="valorGasto" step="0.01" min="0" value="<?php echo "$ " . $valorGasto ?>"><br>
+            <input class="form-control" type="number" name="valorGasto" id="valorGasto" step="0.01" min="0" value="<?php echo $valorGasto ?>"><br>
 
             <?php
                 if($codigoGasto){
@@ -154,16 +153,58 @@ if(isset($_REQUEST['id']) && isset($_REQUEST['op'])){
         </form>
         <br>
 
-        <!-- VALIDACIONES DE ERRORES -->
+        <!-- Validaciones de errores para no permitir insertar valores invalidos -->
         <?php if($error): ?>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <?php echo "<p>$error</p>"; ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    <?php endif; ?>
+        <?php endif; ?>
+        
+        <!-- Mensajes de las diferentes acciones que se pueden hacer: Guardar, Modificar (actualizar) y Eliminar-->
+        <?php if(isset($_REQUEST['mensaje'])): ?>
+            <div class="alert alert-primary alert-dismissible fade show" role="alert" >
+                <?php
+                    switch ($_REQUEST['mensaje']) {
+                        case 'registroGuardado':
+                            echo "<p>Registro Guardado.</p>";
+                            break;
+                        case 'registroModificado':
+                            echo "<p>Registro Modificado y Guardado.</p>";
+                            break;
+                        case 'registroEliminado':
+                            echo "<p>Registro Eliminado.</p>";
+                            break;
+                    }
+                ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
 
+        <!-- Creacion de la Tabla para visualizar los datos insertados -->
+        <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th class="text-center">Nombre</th>
+                <th class="text-center">Tipo de Gasto</th>
+                <th class="text-center">Valor del Gasto</th>
+                <th colspan="2" class="text-center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
 
-
+            <?php foreach($resultados as $registro): ?>
+            <tr>
+                <td><?php echo $registro['nombre']; ?></td>
+                <td><?php echo $registro['tipoGasto']; ?></td>
+                <td><?php echo $registro['valorGasto']; ?></td>
+                
+                <td><a class="btn btn-primary" href="index.php?id=<?php echo $registro['codigoGasto'] ?>&op=m">Modificar</a></td>
+                <td><a class="btn btn-danger" href="index.php?id=<?php echo $registro['codigoGasto'] ?>&op=e" onclick="return confirm('¿Desea eliminar el registro?');">Eliminar</a></td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
 
     </div>
 </body>
